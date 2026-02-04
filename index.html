@@ -29,6 +29,35 @@
             margin-bottom: 30px;
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin: 0;
+        }
+
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lang-button {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+
+        .lang-button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
         }
 
         .stats {
@@ -160,11 +189,16 @@
             gap: 15px;
             flex-wrap: wrap;
             margin-bottom: 10px;
+            word-break: break-all;
         }
 
         .meta-item {
             font-size: 0.9em;
             color: #555;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
 
         .status-badge {
@@ -398,12 +432,43 @@
         }
 
         @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
             h1 {
-                font-size: 1.8em;
+                font-size: 1.5em;
+            }
+
+            .header-wrapper {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .lang-button {
+                padding: 8px 16px;
+                font-size: 0.85em;
             }
             
             .stats {
                 grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px 10px;
+            }
+
+            .stat-number {
+                font-size: 1.5em;
+            }
+
+            .stat-label {
+                font-size: 0.8em;
+            }
+
+            .card {
+                padding: 15px;
             }
 
             .sort-controls {
@@ -414,14 +479,82 @@
             .sort-controls select {
                 width: 100%;
             }
+
+            .items-per-page {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .items-per-page select {
+                width: 100%;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 0.95em;
+            }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .pagination button {
+                padding: 6px 12px;
+                min-width: 35px;
+                font-size: 0.9em;
+            }
+
+            .page-info {
+                font-size: 0.85em;
+            }
+
+            .book-item {
+                padding: 12px;
+            }
+
+            .book-title {
+                font-size: 1em;
+                line-height: 1.4;
+            }
+
+            .genre-badge {
+                display: block;
+                margin-top: 5px;
+                margin-left: 0;
+                width: fit-content;
+            }
+
+            .book-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .meta-item {
+                font-size: 0.85em;
+                white-space: normal;
+                word-break: break-word;
+                max-width: 100%;
+            }
+
+            .book-actions {
+                flex-wrap: wrap;
+            }
+
+            .form-group label {
+                font-size: 0.95em;
+            }
+
+            input, textarea, select {
+                font-size: 16px; /* iOS zoom prevention */
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="margin: 0;">📚 <span id="app-title">読書記録</span></h1>
-            <button onclick="toggleLanguage()" style="padding: 10px 20px; background: white; color: #667eea; border: 2px solid white; font-weight: bold;">
+        <div class="header-wrapper">
+            <h1>📚 <span id="app-title">読書記録</span></h1>
+            <button onclick="toggleLanguage()" class="lang-button">
                 <span id="lang-toggle">🌐 English</span>
             </button>
         </div>
@@ -442,25 +575,6 @@
             <div class="stat-card">
                 <div class="stat-number" id="plannedBooks">0</div>
                 <div class="stat-label">読みたい</div>
-            </div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number" id="novelBooks">0</div>
-                <div class="stat-label">📖 小説</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="selfHelpBooks">0</div>
-                <div class="stat-label">💡 自己啓発</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="englishBooks">0</div>
-                <div class="stat-label">🌐 English</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="otherBooks">0</div>
-                <div class="stat-label">📚 その他</div>
             </div>
         </div>
 
@@ -762,10 +876,6 @@
             document.querySelectorAll('.stat-label')[1].textContent = t('completedBooks');
             document.querySelectorAll('.stat-label')[2].textContent = t('readingBooks');
             document.querySelectorAll('.stat-label')[3].textContent = t('plannedBooks');
-            document.querySelectorAll('.stat-label')[4].textContent = t('novelBooks');
-            document.querySelectorAll('.stat-label')[5].textContent = t('selfHelpBooks');
-            document.querySelectorAll('.stat-label')[6].textContent = t('englishBooks');
-            document.querySelectorAll('.stat-label')[7].textContent = t('otherBooks');
 
             // フォームラベル（新規追加）
             const formLabels = document.querySelectorAll('.card h2');
@@ -1279,16 +1389,6 @@
                 books.filter(b => b.status === 'reading').length;
             document.getElementById('plannedBooks').textContent = 
                 books.filter(b => b.status === 'planned').length;
-            
-            // ジャンル別統計
-            document.getElementById('novelBooks').textContent = 
-                books.filter(b => b.genre === 'novel').length;
-            document.getElementById('selfHelpBooks').textContent = 
-                books.filter(b => b.genre === 'self-help').length;
-            document.getElementById('englishBooks').textContent = 
-                books.filter(b => b.genre === 'english').length;
-            document.getElementById('otherBooks').textContent = 
-                books.filter(b => !b.genre || b.genre === 'other').length;
         }
 
         // 初期化
