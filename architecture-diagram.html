@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Log - アーキテクチャ図</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        .diagram {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .component-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .component-card h3 {
+            color: #667eea;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .component-card ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .component-card li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .icon {
+            font-size: 1.5em;
+        }
+        .flow-description {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .flow-description ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .flow-description li {
+            margin-bottom: 10px;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .legend-box {
+            width: 40px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #333;
+        }
+        .public { background: #e3f2fd; }
+        .private { background: #fff3e0; }
+        .lambda { background: #f3e5f5; }
+        .database { background: #e8f5e9; }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Reading Log - システムアーキテクチャ</h1>
+        <p class="subtitle">AWS サーバーレス構成（Lambda + API Gateway + RDS PostgreSQL）</p>
+
+        <div class="section">
+            <h2>🏗️ 全体アーキテクチャ図</h2>
+            <div class="diagram">
+                <div class="mermaid">
+graph TB
+    subgraph "ユーザー"
+        User[👤 ユーザー<br/>Webブラウザ]
+    end
+
+    subgraph "AWS Cloud"
+        subgraph "フロントエンド層"
+            S3[📦 Amazon S3<br/>Static Website<br/>index.html]
+        end
+
+        subgraph "API層"
+            APIGW[🌐 API Gateway<br/>HTTP API<br/>REST Endpoints]
+        end
+
+        subgraph "VPC: 10.0.0.0/16"
+            subgraph "Public Subnets"
+                PubSub1[Public Subnet 1<br/>10.0.1.0/24<br/>AZ-a]
+                PubSub2[Public Subnet 2<br/>10.0.2.0/24<br/>AZ-b]
+                IGW[🌍 Internet Gateway]
+            end
+
+            subgraph "Private Subnets"
+                PrivSub1[Private Subnet 1<br/>10.0.3.0/24<br/>AZ-a]
+                PrivSub2[Private Subnet 2<br/>10.0.4.0/24<br/>AZ-b]
+                
+                subgraph "Lambda Functions"
+                    L1[⚡ GetBooks<br/>Lambda Function]
+                    L2[⚡ CreateBook<br/>Lambda Function]
+                    L3[⚡ UpdateBook<br/>Lambda Function]
+                    L4[⚡ DeleteBook<br/>Lambda Function]
+                end
+
+                RDS[(🗄️ Amazon RDS<br/>PostgreSQL 15.4<br/>db.t3.micro<br/>Multi-AZ)]
+            end
+        end
+
+        subgraph "セキュリティ・認証"
+            SM[🔐 Secrets Manager<br/>DB認証情報]
+            IAM[👮 IAM Roles<br/>Lambda実行ロール]
+        end
+
+        subgraph "モニタリング"
+            CW[📊 CloudWatch<br/>Logs & Metrics]
+        end
+    end
+
+    User -->|HTTPS| S3
+    User -->|HTTPS API Call| APIGW
+    S3 -.->|Static Assets| User
+    
+    APIGW -->|Invoke| L1
+    APIGW -->|Invoke| L2
+    APIGW -->|Invoke| L3
+    APIGW -->|Invoke| L4
+    
+    L1 -->|Query| RDS
+    L2 -->|Insert| RDS
+    L3 -->|Update| RDS
+    L4 -->|Delete| RDS
+    
+    L1 -.->|Get Credentials| SM
+    L2 -.->|Get Credentials| SM
+    L3 -.->|Get Credentials| SM
+    L4 -.->|Get Credentials| SM
+    
+    L1 -.->|Logs| CW
+    L2 -.->|Logs| CW
+    L3 -.->|Logs| CW
+    L4 -.->|Logs| CW
+    
+    IAM -.->|Authorize| L1
+    IAM -.->|Authorize| L2
+    IAM -.->|Authorize| L3
+    IAM -.->|Authorize| L4
+    
+    IGW ---|Connected| PubSub1
+    IGW ---|Connected| PubSub2
+
+    classDef publicClass fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef privateClass fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef lambdaClass fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef databaseClass fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef securityClass fill:#ffebee,stroke:#c62828,stroke-width:2px
+
+    class S3,APIGW,IGW,PubSub1,PubSub2 publicClass
+    class PrivSub1,PrivSub2 privateClass
+    class L1,L2,L3,L4 lambdaClass
+    class RDS databaseClass
+    class SM,IAM securityClass
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box public"></div>
+                    <span>パブリック層（インターネット公開）</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box private"></div>
+                    <span>プライベート層（VPC内部）</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box lambda"></div>
+                    <span>Lambda関数</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box database"></div>
+                    <span>データベース</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📡 データフロー図</h2>
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    participant User as 👤 ユーザー
+    participant S3 as 📦 S3<br/>(Frontend)
+    participant API as 🌐 API Gateway
+    participant Lambda as ⚡ Lambda
+    participant SM as 🔐 Secrets Manager
+    participant RDS as 🗄️ RDS PostgreSQL
+
+    User->>S3: 1. アクセス (HTTPS)
+    S3-->>User: 2. index.html配信
+    
+    Note over User: ユーザーが本を追加
+    
+    User->>API: 3. POST /books (JSON)
+    API->>Lambda: 4. CreateBook起動
+    Lambda->>SM: 5. DB認証情報取得
+    SM-->>Lambda: 6. 認証情報返却
+    Lambda->>RDS: 7. INSERT クエリ実行
+    RDS-->>Lambda: 8. 結果返却
+    Lambda-->>API: 9. レスポンス (JSON)
+    API-->>User: 10. 200 OK + データ
+    
+    Note over User: データベース更新完了
+                </div>
+            </div>
+
+            <div class="flow-description">
+                <h3>📝 処理フローの説明</h3>
+                <ol>
+                    <li><strong>フロントエンドアクセス</strong>: ユーザーがS3でホストされているWebサイトにアクセス</li>
+                    <li><strong>静的コンテンツ配信</strong>: index.htmlとJavaScriptがユーザーのブラウザに配信される</li>
+                    <li><strong>API呼び出し</strong>: JavaScriptからAPI Gatewayにリクエスト（例: 本の追加）</li>
+                    <li><strong>Lambda起動</strong>: API GatewayがLambda関数を実行</li>
+                    <li><strong>認証情報取得</strong>: LambdaがSecrets Managerからデータベース認証情報を取得</li>
+                    <li><strong>データベース操作</strong>: LambdaがRDS PostgreSQLにクエリを実行</li>
+                    <li><strong>結果返却</strong>: データベース結果がLambdaを経由してユーザーに返される</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 主要コンポーネント</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3><span class="icon">📦</span> Amazon S3</h3>
+                    <ul>
+                        <li>静的ウェブサイトホスティング</li>
+                        <li>index.htmlの配信</li>
+                        <li>HTTPS自動対応</li>
+                        <li>高可用性・耐久性</li>
+                    </ul>
+                </div>
+
+                <div class="component-card">
+                    <h3><span class="icon">🌐</span> API Gateway</h3>
+                    <ul>
+                        <li>HTTP API (REST)</li>
+                        <li>CORSの自動設定</li>
+                        <li>Lambda統合</li>
+                        <li>スロットリング・レート制限</li>
+                    </ul>
+                </div>
+
+                <div class="component-card">
+                    <h3><span class="icon">⚡</span> AWS Lambda</h3>
+                    <ul>
+                        <li>Node.js 18ランタイム</li>
+                        <li>4つの関数（CRUD操作）</li>
+                        <li>VPC内で実行</li>
+                        <li>自動スケーリング</li>
+                    </ul>
+                </div>
+
+                <div class="component-card">
+                    <h3><span class="icon">🗄️</span> Amazon RDS</h3>
+                    <ul>
+                        <li>PostgreSQL 15.4</li>
+                        <li>db.t3.micro インスタンス</li>
+                        <li>プライベートサブネット配置</li>
+                        <li>自動バックアップ (7日間)</li>
+                    </ul>
+                </div>
+
+                <div class="component-card">
+                    <h3><span class="icon">🔐</span> Secrets Manager</h3>
+                    <ul>
+                        <li>DB認証情報の暗号化保存</li>
+                        <li>自動ローテーション対応</li>
+                        <li>Lambda統合</li>
+                        <li>監査ログ</li>
+                    </ul>
+                </div>
+
+                <div class="component-card">
+                    <h3><span class="icon">🔒</span> VPC & セキュリティ</h3>
+                    <ul>
+                        <li>プライベート/パブリックサブネット分離</li>
+                        <li>マルチAZ構成</li>
+                        <li>セキュリティグループによるアクセス制御</li>
+                        <li>NACLによるネットワーク保護</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔐 セキュリティアーキテクチャ</h2>
+            <div class="diagram">
+                <div class="mermaid">
+graph LR
+    subgraph "セキュリティ層"
+        HTTPS[🔒 HTTPS通信<br/>TLS 1.2+]
+        CORS[🌍 CORS設定<br/>オリジン制限]
+        SG[🛡️ Security Groups<br/>ポート制限]
+        IAM[👮 IAM Roles<br/>最小権限]
+        SM[🔐 Secrets Manager<br/>認証情報暗号化]
+        VPC[🏰 VPC分離<br/>Private Subnets]
+    end
+
+    Internet[インターネット] -->|TLS| HTTPS
+    HTTPS --> CORS
+    CORS --> IAM
+    IAM --> SG
+    SG --> VPC
+    VPC --> SM
+
+    style HTTPS fill:#c8e6c9
+    style CORS fill:#fff9c4
+    style SG fill:#ffccbc
+    style IAM fill:#d1c4e9
+    style SM fill:#f8bbd0
+    style VPC fill:#b2ebf2
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 API エンドポイント一覧</h2>
+            <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background: #667eea; color: white;">
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">メソッド</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">エンドポイント</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Lambda関数</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>GET</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>/books</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">GetBooks</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">全ての本を取得</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>POST</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>/books</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">CreateBook</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">新しい本を追加</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>PUT</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>/books/{id}</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">UpdateBook</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">本の情報を更新</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>DELETE</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><code>/books/{id}</code></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">DeleteBook</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">本を削除</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>💰 コスト見積もり</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3><span class="icon">💵</span> 月額コスト（東京リージョン）</h3>
+                    <ul>
+                        <li><strong>RDS db.t3.micro</strong>: $15-20/月</li>
+                        <li><strong>Lambda</strong>: 無料枠内 ($0)</li>
+                        <li><strong>API Gateway</strong>: 無料枠内 ($0)</li>
+                        <li><strong>S3</strong>: ~$0.01/月</li>
+                        <li><strong>Secrets Manager</strong>: ~$0.40/月</li>
+                        <li><strong>データ転送</strong>: ~$1/月</li>
+                    </ul>
+                    <p style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #667eea; font-weight: bold; color: #667eea;">
+                        合計: 約 $15-25/月
+                    </p>
+                </div>
+
+                <div class="component-card">
+                    <h3><span class="icon">📈</span> スケーラビリティ</h3>
+                    <ul>
+                        <li>Lambda: 自動スケーリング</li>
+                        <li>API Gateway: 無制限リクエスト</li>
+                        <li>RDS: 必要に応じてスケールアップ</li>
+                        <li>S3: 無制限ストレージ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" style="background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #4caf50;">
+            <h2 style="color: #2e7d32; border: none;">✅ アーキテクチャの特徴</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 10px 0; border-bottom: 1px solid #c8e6c9;">✓ <strong>サーバーレス</strong>: サーバー管理不要</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #c8e6c9;">✓ <strong>高可用性</strong>: マルチAZ構成</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #c8e6c9;">✓ <strong>セキュア</strong>: VPC分離、暗号化、IAM</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #c8e6c9;">✓ <strong>スケーラブル</strong>: 自動スケーリング対応</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #c8e6c9;">✓ <strong>コスト効率</strong>: 従量課金、無料枠活用</li>
+                <li style="padding: 10px 0;">✓ <strong>保守性</strong>: CloudFormationによるIaC</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                wrap: true
+            }
+        });
+    </script>
+</body>
+</html>
