@@ -693,6 +693,15 @@
     </div>
 
     <script>
+        // ========================================
+        // API設定
+        // ========================================
+        // ⚠️ 重要: デプロイ後にCloudFormationのOutputから取得したAPIエンドポイントに置き換えてください
+        const API_BASE_URL = 'https://YOUR_API_ID.execute-api.YOUR_REGION.amazonaws.com/prod';
+        
+        // ========================================
+        // アプリケーションコード
+        // ========================================
         let books = [];
         let useLocalStorage = false;
         let editingBookId = null;
@@ -1406,7 +1415,9 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `読書記録_${new Date().toISOString().split('T')[0]}.json`;
+            // GitHub backup形式に合わせたファイル名（日本語なし）
+            const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '').replace('T', '_');
+            a.download = `reading-log-backup_${timestamp}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
