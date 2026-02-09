@@ -1,9 +1,0 @@
-{
-  "name": "postgres-layer",
-  "version": "1.0.0",
-  "description": "PostgreSQL client for AWS Lambda",
-  "dependencies": {
-    "pg": "^8.11.3",
-    "@aws-sdk/client-secrets-manager": "^3.470.0"
-  }
-}

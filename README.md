@@ -1,181 +1,292 @@
-# 📚 Reading Log - サーバーレスアプリケーション
+# 📚 Reading List - 読書記録アプリ
 
-AWS Lambda + API Gateway + RDS PostgreSQLを使用した読書記録Webアプリケーションです。
+シンプルで使いやすい読書記録アプリです。ブラウザだけで動作し、すべてのデータはローカルに保存されます。
 
-## 📁 ファイル構成
+## 🌐 デモサイト
 
+**👉 https://seren34-708.github.io/ReadingList/**
+
+すぐに使えます！アカウント登録不要、完全無料です。
+
+---
+
+## ✨ 主な機能
+
+### 📖 基本機能
+- ✅ **本の登録・編集・削除** - タイトル、著者、ジャンル、評価など
+- ✅ **ISBN自動入力** - ISBNコードから書籍情報を自動取得
+- ✅ **ステータス管理** - 読書中・読了・読みたい
+- ✅ **評価システム** - 5段階評価（色分け表示）
+- ✅ **メモ・感想** - 自由にメモを記録
+
+### 🔍 検索・フィルター
+- ✅ **全文検索** - タイトル・著者・メモから検索
+- ✅ **ステータス絞り込み** - 読書中/読了/読みたい で絞り込み
+- ✅ **ジャンル絞り込み** - 8つのジャンルから選択
+- ✅ **並び替え** - 日付・評価・タイトル順など
+
+### 📊 ジャンル（8種類）
+1. 📖 小説・文学
+2. 📘 ビジネス・経済
+3. 💡 自己啓発・心理・哲学
+4. 💻 技術・IT
+5. 📚 実用書・趣味
+6. 🎓 学習・教養
+7. 🌍 英語・洋書
+8. 📝 その他
+
+### 💾 データ管理
+- ✅ **エクスポート** - JSONファイルでバックアップ
+- ✅ **インポート** - 他の端末でデータを復元
+- ✅ **自動保存** - ブラウザのlocalStorageに自動保存
+- ✅ **GitHub自動バックアップ** - 週1回自動バックアップ（オプション）
+
+### 🌍 その他の機能
+- ✅ **言語切り替え** - 日本語・English
+- ✅ **レスポンシブデザイン** - スマホ・タブレット対応
+- ✅ **完全オフライン動作** - インターネット不要（ISBN検索以外）
+
+---
+
+## 🚀 使い方
+
+### 1. アクセスする
 ```
-├── cloudformation-template.yaml   # CloudFormationテンプレート
-├── DEPLOYMENT.md                  # デプロイ手順書
-├── create-layer.sh                # Lambda Layer作成スクリプト
-├── init-database.sql              # データベース初期化SQL
-├── api-integration.js             # API統合ヘルパー関数
-└── index.html                     # フロントエンドHTML
-```
-
-## 🏗️ アーキテクチャ
-
-```
-┌─────────────┐
-│   Browser   │
-│ (index.html)│
-└──────┬──────┘
-       │ HTTPS
-       ▼
-┌─────────────────┐
-│  API Gateway    │
-│   (HTTP API)    │
-└────────┬────────┘
-         │
-         ▼
-┌──────────────────────────┐
-│   Lambda Functions       │
-│ ┌──────────────────────┐ │
-│ │ GetBooks             │ │
-│ │ CreateBook           │ │
-│ │ UpdateBook           │ │
-│ │ DeleteBook           │ │
-│ └──────────────────────┘ │
-└──────────┬───────────────┘
-           │ VPC
-           ▼
-    ┌──────────────┐
-    │    RDS       │
-    │ PostgreSQL   │
-    │ (Private)    │
-    └──────────────┘
-```
-
-## ⚡ 機能
-
-- ✅ 本の追加・編集・削除
-- ✅ ステータス管理（読書中/読了/読みたい）
-- ✅ ジャンル分類（小説/自己啓発/English/その他）
-- ✅ 評価（5段階）
-- ✅ 読み始めた日・読み終わった日の記録
-- ✅ メモ・感想の記録
-- ✅ 並び替え・フィルター機能
-- ✅ ISBN自動入力機能
-- ✅ 日本語/英語切り替え
-- ✅ ページネーション
-- ✅ データエクスポート/インポート
-- ✅ レスポンシブデザイン（スマホ対応）
-
-## 🚀 クイックスタート
-
-詳細な手順は[DEPLOYMENT.md](DEPLOYMENT.md)を参照してください。
-
-### 1. Lambda Layerの作成
-
-```bash
-./create-layer.sh
+https://seren34-708.github.io/ReadingList/
 ```
 
-### 2. CloudFormationスタックのデプロイ
+### 2. 本を追加する
 
-```bash
-aws cloudformation create-stack \
-  --stack-name readinglog-serverless \
-  --template-body file://cloudformation-template.yaml \
-  --parameters \
-    ParameterKey=DBUsername,ParameterValue=admin \
-    ParameterKey=DBPassword,ParameterValue=YourPassword123 \
-  --capabilities CAPABILITY_IAM
+#### 方法A: 手動で入力
+1. 「本を追加」フォームに入力
+2. タイトル、著者、ジャンルなどを記入
+3. 「記録を追加」をクリック
+
+#### 方法B: ISBN自動入力
+1. ISBNコード（13桁または10桁）を入力
+2. 「📚 情報取得」をクリック
+3. 書籍情報が自動で入力される
+4. 「記録を追加」をクリック
+
+### 3. 本を管理する
+- **編集**: 本のカードの「編集」ボタン
+- **削除**: 本のカードの「削除」ボタン
+- **検索**: 検索ボックスにキーワードを入力
+- **絞り込み**: ステータスやジャンルで絞り込み
+
+### 4. データをバックアップする
+1. 「📥 データをエクスポート」をクリック
+2. JSONファイルがダウンロードされる
+3. 大切に保存しておく
+
+### 5. データを復元する
+1. 「📤 データをインポート」をクリック
+2. バックアップしたJSONファイルを選択
+3. データが復元される
+
+---
+
+## 📱 対応環境
+
+### ブラウザ
+- ✅ Chrome / Edge（推奨）
+- ✅ Firefox
+- ✅ Safari
+- ✅ スマホブラウザ（iOS Safari、Chrome）
+
+### デバイス
+- ✅ PC（Windows / Mac / Linux）
+- ✅ スマートフォン（iPhone / Android）
+- ✅ タブレット（iPad / Android）
+
+---
+
+## 💡 便利な使い方
+
+### 読書記録のルーティン
+```
+1. 本を読み始める
+   → ステータス: 読書中
+   → 読み始めた日を記録
+
+2. 読み終わる
+   → ステータス: 読了
+   → 読み終わった日を記録
+   → 評価を付ける
+   → 感想を書く
+
+3. 次に読む本を探す
+   → ステータス: 読みたい でフィルター
 ```
 
-### 3. データベースの初期化
-
-```bash
-psql -h <RDS_ENDPOINT> -U admin -d readinglogdb -f init-database.sql
+### 高評価の本を探す
+```
+並び替え: 評価順（高→低）
+→ ★★★★★（金色）の本が上に表示される
 ```
 
-### 4. フロントエンドのデプロイ
-
-1. `index.html`のAPI_BASE_URLを更新
-2. S3にアップロード
-
-```bash
-aws s3 cp index.html s3://readinglog-frontend-YOUR_ACCOUNT_ID/
+### 読了本の振り返り
+```
+ステータス: 読了
+ジャンル: (好きなジャンル)
+並び替え: 評価順
+→ そのジャンルで高評価の本を確認
 ```
 
-## 📊 データベーススキーマ
-
-```sql
-CREATE TABLE books (
-    id BIGSERIAL PRIMARY KEY,
-    title VARCHAR(500) NOT NULL,
-    author VARCHAR(255),
-    genre VARCHAR(50),
-    url VARCHAR(1000),
-    status VARCHAR(50) NOT NULL,
-    rating VARCHAR(10),
-    start_date DATE,
-    end_date DATE,
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+### 積読の確認
+```
+ステータス: 読みたい
+→ 読む予定の本をチェック
 ```
 
-## 🔌 API エンドポイント
+---
 
-| Method | Endpoint | 説明 |
-|--------|----------|------|
-| GET | `/books` | 全ての本を取得 |
-| POST | `/books` | 新しい本を追加 |
-| PUT | `/books/{id}` | 本を更新 |
-| DELETE | `/books/{id}` | 本を削除 |
+## 🔒 プライバシー・セキュリティ
 
-### リクエスト例
+### データの保存場所
+- **ローカルストレージ**: ブラウザのlocalStorageに保存
+- **サーバー送信なし**: あなたのデータは外部に送信されません
+- **完全プライベート**: あなただけがデータを見られます
 
-```bash
-# 本の一覧を取得
-curl https://YOUR_API.execute-api.REGION.amazonaws.com/prod/books
+### 注意事項
+⚠️ **ブラウザのデータを削除すると記録も消えます**
+- 定期的にエクスポートしてバックアップを取ってください
+- Cookie/サイトデータの削除に注意
 
-# 新しい本を追加
-curl -X POST https://YOUR_API.execute-api.REGION.amazonaws.com/prod/books \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "吾輩は猫である",
-    "author": "夏目漱石",
-    "genre": "novel",
-    "status": "completed",
-    "rating": "5"
-  }'
+⚠️ **複数デバイスで同期はされません**
+- エクスポート/インポートで手動でデータを移行してください
+- または GitHub自動バックアップを設定してください
+
+---
+
+## 🔄 GitHub自動バックアップ（オプション）
+
+週1回、自動的にGitHubにバックアップを保存できます。
+
+### セットアップ手順
+
+1. **backupフォルダを作成**
+   ```
+   Add file → Create new file
+   ファイル名: backup/.gitkeep
+   ```
+
+2. **GitHub Actionsワークフローを追加**
+   ```
+   Add file → Create new file
+   ファイル名: .github/workflows/backup.yml
+   内容: ダウンロードした backup.yml をコピー
+   ```
+
+3. **GitHub Actionsを有効化**
+   ```
+   Settings → Actions → General
+   Workflow permissions: Read and write permissions
+   ```
+
+4. **実際のデータをバックアップ**
+   ```
+   github-backup-setup.html を開く
+   Personal Access Tokenを入力
+   「現在のデータをGitHubにバックアップ」をクリック
+   ```
+
+詳しくは `GITHUB_BACKUP_README.md` を参照してください。
+
+---
+
+## 📂 ファイル構成
+
+```
+ReadingList/
+├── index.html                      # アプリ本体（これだけで動く）
+├── README.md                       # このファイル
+├── backup/                         # バックアップ保存先（GitHub自動バックアップ用）
+├── .github/
+│   └── workflows/
+│       └── backup.yml              # GitHub Actions設定（オプション）
+├── github-backup-setup.html        # バックアップ設定ガイド（オプション）
+└── GITHUB_BACKUP_README.md         # バックアップ詳細説明（オプション）
 ```
 
-## 💰 コスト見積もり
+---
 
-月額（東京リージョン、軽度使用）:
-- RDS db.t3.micro: ~$15-20
-- Lambda: 無料枠内
-- API Gateway: 無料枠内
-- S3: ~$0.01
-- Secrets Manager: ~$0.40
+## 🛠️ 技術スタック
 
-**合計**: 約$15-25/月
+- **HTML5** - 構造
+- **CSS3** - デザイン
+- **JavaScript (Vanilla)** - 機能実装
+- **localStorage** - データ保存
+- **Open Library API** - ISBN検索（メイン）
+- **Google Books API** - ISBN検索（サブ）
+- **GitHub Pages** - ホスティング
+- **GitHub Actions** - 自動バックアップ（オプション）
 
-## 🔒 セキュリティ
+---
 
-- ✅ RDSはプライベートサブネットに配置
-- ✅ データベース認証情報はSecrets Managerで管理
-- ✅ Lambda関数はVPC内で実行
-- ✅ HTTPS通信のみ
-- ✅ CORSの適切な設定
-- ✅ IAMロールによる最小権限の原則
+## 📝 更新履歴
 
-## 🐛 トラブルシューティング
+### v2.0.0 (2026-02-09)
+- ✨ ステータス絞り込み機能を追加
+- ✨ 評価の星の色分け表示（背景色バッジ）
+- ✨ 全文検索機能を追加
+- ✨ ジャンルを8種類に拡張
+- ✨ 複数API対応（Open Library + Google Books）
+- 🐛 ISBN検索の429エラー対策
 
-詳細は[DEPLOYMENT.md](DEPLOYMENT.md)の「トラブルシューティング」セクションを参照してください。
+### v1.0.0 (2026-02-04)
+- 🎉 初回リリース
+- ✨ 基本的なCRUD機能
+- ✨ エクスポート/インポート機能
+- ✨ 言語切り替え機能
 
-## 📝 ライセンス
+---
 
-MIT License
+## 💬 よくある質問（FAQ）
 
-## 🤝 貢献
+### Q1. データはどこに保存されますか？
+A. ブラウザのlocalStorageに保存されます。サーバーには送信されません。
 
-プルリクエストを歓迎します！
+### Q2. 複数のデバイスで同期できますか？
+A. 自動同期はできません。エクスポート/インポートで手動で移行してください。
 
-## 📧 お問い合わせ
+### Q3. ブラウザのデータを削除したらどうなりますか？
+A. 読書記録も削除されます。定期的にエクスポートしてバックアップを取ってください。
 
-問題が発生した場合は、GitHubのIssuesで報告してください。
+### Q4. スマホでも使えますか？
+A. はい、スマホブラウザで快適に使えます。
+
+### Q5. オフラインで使えますか？
+A. はい、ISBN検索以外はオフラインで使えます。
+
+### Q6. アカウント登録は必要ですか？
+A. 不要です。すぐに使えます。
+
+### Q7. 無料ですか？
+A. はい、完全無料です。
+
+### Q8. ISBN検索が429エラーになります
+A. Google Books APIの制限です。1-2分待つか、Open Library APIが自動で使われます。
+
+### Q9. データをGitHubにバックアップしたい
+A. `GITHUB_BACKUP_README.md` を参照してください。
+
+### Q10. 評価の星の色が変わりません
+A. ページをリロード（Ctrl+Shift+R）してください。新しいバージョンでは背景色付きバッジになります。
+
+---
+
+## 🎯 今後の予定
+
+- [ ] ダークモード
+- [ ] 読書目標設定
+- [ ] 詳細統計・グラフ
+- [ ] タグ機能
+- [ ] ページ数管理
+- [ ] 読書時間トラッカー
+- [ ] カバー画像表示
+- [ ] PWA化（アプリとしてインストール可能に）
+
+---
+
+**楽しい読書ライフを！📚✨**
