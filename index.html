@@ -427,7 +427,6 @@
         }
 
         .rating {
-            color: #ffd700;
             font-size: 1.2em;
         }
 
@@ -691,6 +690,13 @@
                 </div>
             </div>
             <div class="sort-controls">
+                <label>ステータス：</label>
+                <select id="filterStatus" onchange="filterAndSortBooks()">
+                    <option value="all">すべて</option>
+                    <option value="reading">📖 読書中</option>
+                    <option value="completed">✅ 読了</option>
+                    <option value="planned">📚 読みたい</option>
+                </select>
                 <label>ジャンル：</label>
                 <select id="filterGenre" onchange="filterAndSortBooks()">
                     <option value="all">すべて</option>
@@ -796,6 +802,7 @@
                 searchPlaceholder: '🔍 タイトル・著者・メモから検索...',
                 clearSearch: 'クリア',
                 searchResults: '件の検索結果',
+                filterStatus: 'ステータス：',
                 filterGenre: 'ジャンル：',
                 filterAll: 'すべて',
                 sortBy: '並び替え：',
@@ -881,6 +888,7 @@
                 searchPlaceholder: '🔍 Search title, author, notes...',
                 clearSearch: 'Clear',
                 searchResults: 'search results',
+                filterStatus: 'Status:',
                 filterGenre: 'Genre:',
                 filterAll: 'All',
                 sortBy: 'Sort by:',
@@ -1030,15 +1038,27 @@
 
             // フィルター
             const filterLabels = document.querySelectorAll('.sort-controls label');
-            filterLabels[0].textContent = t('filterGenre');
-            filterLabels[1].textContent = t('sortBy');
+            filterLabels[0].textContent = t('filterStatus');
+            filterLabels[1].textContent = t('filterGenre');
+            filterLabels[2].textContent = t('sortBy');
+
+            // ステータスフィルター
+            const statusFilter = document.getElementById('filterStatus');
+            statusFilter.options[0].text = t('filterAll');
+            statusFilter.options[1].text = t('statusReading');
+            statusFilter.options[2].text = t('statusCompleted');
+            statusFilter.options[3].text = t('statusPlanned');
 
             const genreFilter = document.getElementById('filterGenre');
             genreFilter.options[0].text = t('filterAll');
-            genreFilter.options[1].text = t('novelBooks');
-            genreFilter.options[2].text = t('selfHelpBooks');
-            genreFilter.options[3].text = t('englishBooks');
-            genreFilter.options[4].text = t('otherBooks');
+            genreFilter.options[1].text = t('genreFiction');
+            genreFilter.options[2].text = t('genreBusiness');
+            genreFilter.options[3].text = t('genreSelfHelp');
+            genreFilter.options[4].text = t('genreTech');
+            genreFilter.options[5].text = t('genrePractical');
+            genreFilter.options[6].text = t('genreEducational');
+            genreFilter.options[7].text = t('genreEnglish');
+            genreFilter.options[8].text = t('genreOther');
 
             // ソート
             const sortSelect = document.getElementById('sortBy');
@@ -1457,7 +1477,22 @@
 
                 const statusClass = `status-${book.status}`;
                 const genreClass = `genre-${book.genre || 'other'}`;
-                const ratingStars = book.rating ? '⭐'.repeat(parseInt(book.rating)) : '';
+                
+                // 評価の星（色付き）
+                const getRatingStars = (rating) => {
+                    if (!rating) return '';
+                    const count = parseInt(rating);
+                    const colors = {
+                        5: '#FFD700', // ゴールド
+                        4: '#FFA500', // オレンジ
+                        3: '#87CEEB', // スカイブルー
+                        2: '#C0C0C0', // シルバー
+                        1: '#D3D3D3'  // ライトグレー
+                    };
+                    const color = colors[count] || '#FFD700';
+                    return `<span style="color: ${color} !important;">${'⭐'.repeat(count)}</span>`;
+                };
+                const ratingStars = getRatingStars(book.rating);
 
                 // 編集モードの場合
                 if (editingBookId === book.id) {
@@ -1682,6 +1717,7 @@
 
         // フィルター＆ソート機能
         function filterAndSortBooks() {
+            const filterStatus = document.getElementById('filterStatus').value;
             const filterGenre = document.getElementById('filterGenre').value;
             const sortBy = document.getElementById('sortBy').value;
             const searchQuery = document.getElementById('searchBox').value.toLowerCase().trim();
@@ -1697,6 +1733,13 @@
                     return title.includes(searchQuery) || 
                            author.includes(searchQuery) || 
                            notes.includes(searchQuery);
+                });
+            }
+
+            // ステータスでフィルター
+            if (filterStatus !== 'all') {
+                filteredBooks = filteredBooks.filter(book => {
+                    return book.status === filterStatus;
                 });
             }
 
