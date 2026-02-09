@@ -600,10 +600,14 @@
                 <div class="form-group">
                     <label for="genre">ジャンル *</label>
                     <select id="genre" required>
-                        <option value="novel">小説</option>
-                        <option value="self-help">自己啓発</option>
-                        <option value="english">English</option>
-                        <option value="other">その他</option>
+                        <option value="fiction">📖 小説・文学</option>
+                        <option value="business">📘 ビジネス・経済</option>
+                        <option value="self-help">💡 自己啓発・心理・哲学</option>
+                        <option value="tech">💻 技術・IT</option>
+                        <option value="practical">📚 実用書・趣味</option>
+                        <option value="educational">🎓 学習・教養</option>
+                        <option value="english">🌍 英語・洋書</option>
+                        <option value="other">📝 その他</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -667,14 +671,37 @@
                     <option value="all">すべて</option>
                 </select>
             </div>
+            <div class="sort-controls" style="margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <input 
+                            type="text" 
+                            id="searchBox" 
+                            placeholder="🔍 タイトル・著者・メモから検索..." 
+                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;"
+                            oninput="filterAndSortBooks()"
+                        >
+                    </div>
+                    <button 
+                        onclick="clearSearch()" 
+                        style="padding: 10px 20px; background: #95a5a6; color: white; border: none; border-radius: 8px; cursor: pointer;"
+                    >
+                        クリア
+                    </button>
+                </div>
+            </div>
             <div class="sort-controls">
                 <label>ジャンル：</label>
                 <select id="filterGenre" onchange="filterAndSortBooks()">
                     <option value="all">すべて</option>
-                    <option value="novel">📖 小説</option>
-                    <option value="self-help">💡 自己啓発</option>
-                    <option value="english">🌐 English</option>
-                    <option value="other">📚 その他</option>
+                    <option value="fiction">📖 小説・文学</option>
+                    <option value="business">📘 ビジネス・経済</option>
+                    <option value="self-help">💡 自己啓発・心理・哲学</option>
+                    <option value="tech">💻 技術・IT</option>
+                    <option value="practical">📚 実用書・趣味</option>
+                    <option value="educational">🎓 学習・教養</option>
+                    <option value="english">🌍 英語・洋書</option>
+                    <option value="other">📝 その他</option>
                 </select>
                 <label>並び替え：</label>
                 <select id="sortBy" onchange="filterAndSortBooks()">
@@ -718,10 +745,14 @@
                 completedBooks: '読了',
                 readingBooks: '読書中',
                 plannedBooks: '読みたい',
-                novelBooks: '📖 小説',
-                selfHelpBooks: '💡 自己啓発',
-                englishBooks: '🌐 English',
-                otherBooks: '📚 その他',
+                fictionBooks: '📖 小説・文学',
+                businessBooks: '📘 ビジネス・経済',
+                selfHelpBooks: '💡 自己啓発・心理・哲学',
+                techBooks: '💻 技術・IT',
+                practicalBooks: '📚 実用書・趣味',
+                educationalBooks: '🎓 学習・教養',
+                englishBooks: '🌍 英語・洋書',
+                otherBooks: '📝 その他',
                 addNewBook: '新しい本を追加',
                 isbn: 'ISBN（自動入力）',
                 isbnPlaceholder: '例: 9784101001098 または 978-4-10-100109-8',
@@ -730,10 +761,14 @@
                 bookTitle: '書籍名',
                 author: '著者',
                 genre: 'ジャンル',
-                genreNovel: '小説',
-                genreSelfHelp: '自己啓発',
-                genreEnglish: 'English',
-                genreOther: 'その他',
+                genreFiction: '📖 小説・文学',
+                genreBusiness: '📘 ビジネス・経済',
+                genreSelfHelp: '💡 自己啓発・心理・哲学',
+                genreTech: '💻 技術・IT',
+                genrePractical: '📚 実用書・趣味',
+                genreEducational: '🎓 学習・教養',
+                genreEnglish: '🌍 英語・洋書',
+                genreOther: '📝 その他',
                 url: 'URL（参考リンク）',
                 urlPlaceholder: 'https://example.com',
                 status: 'ステータス',
@@ -758,6 +793,9 @@
                 items20: '20件',
                 items50: '50件',
                 itemsAll: 'すべて',
+                searchPlaceholder: '🔍 タイトル・著者・メモから検索...',
+                clearSearch: 'クリア',
+                searchResults: '件の検索結果',
                 filterGenre: 'ジャンル：',
                 filterAll: 'すべて',
                 sortBy: '並び替え：',
@@ -792,10 +830,14 @@
                 completedBooks: 'Completed',
                 readingBooks: 'Reading',
                 plannedBooks: 'Want to Read',
-                novelBooks: '📖 Novel',
-                selfHelpBooks: '💡 Self-Help',
-                englishBooks: '🌐 English',
-                otherBooks: '📚 Other',
+                fictionBooks: '📖 Fiction',
+                businessBooks: '📘 Business',
+                selfHelpBooks: '💡 Self-Help & Philosophy',
+                techBooks: '💻 Tech & IT',
+                practicalBooks: '📚 Practical & Hobbies',
+                educationalBooks: '🎓 Educational',
+                englishBooks: '🌍 English Books',
+                otherBooks: '📝 Other',
                 addNewBook: 'Add New Book',
                 isbn: 'ISBN (Auto-fill)',
                 isbnPlaceholder: 'e.g., 9784101001098 or 978-4-10-100109-8',
@@ -804,10 +846,14 @@
                 bookTitle: 'Book Title',
                 author: 'Author',
                 genre: 'Genre',
-                genreNovel: 'Novel',
-                genreSelfHelp: 'Self-Help',
-                genreEnglish: 'English',
-                genreOther: 'Other',
+                genreFiction: '📖 Fiction',
+                genreBusiness: '📘 Business',
+                genreSelfHelp: '💡 Self-Help & Philosophy',
+                genreTech: '💻 Tech & IT',
+                genrePractical: '📚 Practical & Hobbies',
+                genreEducational: '🎓 Educational',
+                genreEnglish: '🌍 English Books',
+                genreOther: '📝 Other',
                 url: 'URL (Reference Link)',
                 urlPlaceholder: 'https://example.com',
                 status: 'Status',
@@ -832,6 +878,9 @@
                 items20: '20 items',
                 items50: '50 items',
                 itemsAll: 'All',
+                searchPlaceholder: '🔍 Search title, author, notes...',
+                clearSearch: 'Clear',
+                searchResults: 'search results',
                 filterGenre: 'Genre:',
                 filterAll: 'All',
                 sortBy: 'Sort by:',
@@ -949,10 +998,14 @@
         function updateSelectOptions() {
             // ジャンル
             const genreSelect = document.getElementById('genre');
-            genreSelect.options[0].text = t('genreNovel');
-            genreSelect.options[1].text = t('genreSelfHelp');
-            genreSelect.options[2].text = t('genreEnglish');
-            genreSelect.options[3].text = t('genreOther');
+            genreSelect.options[0].text = t('genreFiction');
+            genreSelect.options[1].text = t('genreBusiness');
+            genreSelect.options[2].text = t('genreSelfHelp');
+            genreSelect.options[3].text = t('genreTech');
+            genreSelect.options[4].text = t('genrePractical');
+            genreSelect.options[5].text = t('genreEducational');
+            genreSelect.options[6].text = t('genreEnglish');
+            genreSelect.options[7].text = t('genreOther');
 
             // ステータス
             const statusSelect = document.getElementById('status');
@@ -996,6 +1049,12 @@
             sortSelect.options[4].text = t('sortStartDate');
             sortSelect.options[5].text = t('sortEndDate');
             sortSelect.options[6].text = t('sortTitle');
+            
+            // 検索ボックスのプレースホルダー
+            const searchBox = document.getElementById('searchBox');
+            if (searchBox) {
+                searchBox.placeholder = t('searchPlaceholder');
+            }
         }
 
         // ページ読み込み時にデータを取得
@@ -1012,6 +1071,28 @@
                 const localData = localStorage.getItem('readingBooks');
                 if (localData) {
                     books = JSON.parse(localData);
+                    
+                    // ジャンルの移行処理（古いジャンル値を新しい値に変換）
+                    let migrated = false;
+                    books = books.map(book => {
+                        if (book.genre === 'novel') {
+                            book.genre = 'fiction';
+                            migrated = true;
+                        }
+                        // 既存のジャンルがない場合はfictionに設定
+                        if (!book.genre) {
+                            book.genre = 'other';
+                            migrated = true;
+                        }
+                        return book;
+                    });
+                    
+                    // 移行があった場合は保存
+                    if (migrated) {
+                        saveBooks();
+                        console.log('ジャンルを新形式に移行しました');
+                    }
+                    
                     useLocalStorage = true;
                     filterAndSortBooks();
                     updateStats();
@@ -1064,7 +1145,7 @@
             }
         }
 
-        // ISBN情報取得
+        // ISBN情報取得（複数API対応）
         async function fetchBookInfo() {
             const isbnInput = document.getElementById('isbn').value.trim();
             if (!isbnInput) {
@@ -1077,56 +1158,173 @@
             
             // ISBNの妥当性チェック（10桁または13桁）
             if (isbn.length !== 10 && isbn.length !== 13) {
-                alert('ISBNは10桁または13桁で入力してください');
+                alert('ISBNは10桁または13桁で入力してください\n\n入力された桁数: ' + isbn.length + '\n入力値: ' + isbn);
                 return;
             }
 
-            const button = event.target;
+            // ボタン要素を取得
+            const button = document.querySelector('button[onclick="fetchBookInfo()"]');
+            const originalText = button.innerHTML;
             button.disabled = true;
-            button.textContent = '取得中...';
 
             try {
-                // Google Books APIで検索
-                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&country=JP`);
+                console.log('=== ISBN検索開始 ===');
+                console.log('ISBN:', isbn);
                 
-                if (!response.ok) {
-                    throw new Error('API接続エラー');
+                let bookData = null;
+                
+                // 方法1: Open Library API（メイン - 制限が緩い）
+                button.innerHTML = '📚 Open Library検索中...';
+                bookData = await fetchFromOpenLibrary(isbn);
+                
+                // 方法2: Open Libraryで見つからなければGoogle Books API
+                if (!bookData) {
+                    console.log('Open Libraryで見つからず、Google Books APIを試行...');
+                    button.innerHTML = '📖 Google Books検索中...';
+                    bookData = await fetchFromGoogleBooks(isbn);
                 }
-
-                const data = await response.json();
-
-                if (data.items && data.items.length > 0) {
-                    const bookInfo = data.items[0].volumeInfo;
+                
+                // 結果を入力欄に反映
+                if (bookData) {
+                    console.log('✅ 書籍情報取得成功:', bookData);
+                    
+                    let successMsg = '✅ 書籍情報を取得しました！\n\n';
+                    successMsg += `📚 ソース: ${bookData.source}\n\n`;
                     
                     // タイトル
-                    if (bookInfo.title) {
-                        document.getElementById('title').value = bookInfo.title;
+                    if (bookData.title) {
+                        document.getElementById('title').value = bookData.title;
+                        successMsg += `タイトル: ${bookData.title}\n`;
                     }
                     
                     // 著者
-                    if (bookInfo.authors && bookInfo.authors.length > 0) {
-                        document.getElementById('author').value = bookInfo.authors.join(', ');
+                    if (bookData.authors && bookData.authors.length > 0) {
+                        document.getElementById('author').value = bookData.authors.join(', ');
+                        successMsg += `著者: ${bookData.authors.join(', ')}\n`;
                     }
                     
-                    // 説明（最初の300文字）
-                    if (bookInfo.description) {
-                        const description = bookInfo.description.replace(/<[^>]*>/g, ''); // HTMLタグを除去
-                        const shortDesc = description.length > 300 
-                            ? description.substring(0, 300) + '...' 
-                            : description;
+                    // 説明
+                    if (bookData.description) {
+                        const shortDesc = bookData.description.length > 300 
+                            ? bookData.description.substring(0, 300) + '...' 
+                            : bookData.description;
                         document.getElementById('notes').value = shortDesc;
                     }
-
-                    alert('✓ 書籍情報を取得しました！');
+                    
+                    // URL
+                    if (bookData.url) {
+                        document.getElementById('url').value = bookData.url;
+                    }
+                    
+                    alert(successMsg);
                 } else {
-                    alert('❌ 書籍情報が見つかりませんでした。\n\n以下を確認してください：\n・ISBNが正しいか\n・13桁のISBN-13を使用しているか\n・書籍がGoogle Booksに登録されているか');
+                    console.log('❌ 全てのAPIで書籍が見つかりませんでした');
+                    alert('❌ 書籍情報が見つかりませんでした。\n\nISBN: ' + isbn + '\n\n【試したAPI】\n✓ Open Library\n✓ Google Books\n\n【原因の可能性】\n・ISBNが正しくない\n・どのデータベースにも登録されていない\n・古い書籍や一部の出版社の本\n\n【対処法】\n1. ISBNを確認して再入力\n2. ISBN-10とISBN-13の両方を試す\n3. 手動で書籍情報を入力');
                 }
             } catch (error) {
-                console.error('ISBN取得エラー:', error);
-                alert('❌ 書籍情報の取得に失敗しました。\n\nインターネット接続を確認してください。\nまたはISBNを手動で入力してください。');
+                console.error('❌ ISBN取得エラー:', error);
+                alert('❌ 書籍情報の取得に失敗しました。\n\nエラー: ' + error.message + '\n\nインターネット接続を確認してください。\n問題が続く場合は手動で入力してください。');
             } finally {
                 button.disabled = false;
-                button.textContent = '📚 情報取得';
+                button.innerHTML = originalText;
+            }
+        }
+
+        // Open Library APIから取得
+        async function fetchFromOpenLibrary(isbn) {
+            try {
+                console.log('📚 Open Library API 検索中...');
+                const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`;
+                console.log('URL:', url);
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.log('Open Library API エラー:', response.status);
+                    return null;
+                }
+                
+                const data = await response.json();
+                console.log('Open Library Response:', data);
+                
+                const bookKey = `ISBN:${isbn}`;
+                if (data[bookKey]) {
+                    const book = data[bookKey];
+                    
+                    // 著者情報を整形
+                    const authors = book.authors ? book.authors.map(a => a.name) : [];
+                    
+                    // 説明を整形（HTMLタグ除去）
+                    let description = '';
+                    if (book.excerpts && book.excerpts.length > 0) {
+                        description = book.excerpts[0].text.replace(/<[^>]*>/g, '');
+                    } else if (book.notes) {
+                        description = book.notes.replace(/<[^>]*>/g, '');
+                    }
+                    
+                    return {
+                        source: 'Open Library',
+                        title: book.title || '',
+                        authors: authors,
+                        description: description,
+                        url: book.url || `https://openlibrary.org/isbn/${isbn}`
+                    };
+                }
+                
+                console.log('Open Libraryに登録なし');
+                return null;
+            } catch (error) {
+                console.error('Open Library API エラー:', error);
+                return null;
+            }
+        }
+
+        // Google Books APIから取得（フォールバック）
+        async function fetchFromGoogleBooks(isbn) {
+            try {
+                console.log('📖 Google Books API 検索中...');
+                const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`;
+                console.log('URL:', url);
+                
+                const response = await fetch(url);
+                console.log('Google Books Response status:', response.status);
+                
+                // 429エラー（制限超過）の場合は諦める
+                if (response.status === 429) {
+                    console.log('Google Books API: リクエスト制限に達しました');
+                    return null;
+                }
+                
+                if (!response.ok) {
+                    console.log('Google Books API エラー:', response.status);
+                    return null;
+                }
+                
+                const data = await response.json();
+                console.log('Google Books Response:', data);
+                
+                if (data.items && data.items.length > 0) {
+                    const book = data.items[0].volumeInfo;
+                    
+                    // 説明を整形（HTMLタグ除去）
+                    let description = '';
+                    if (book.description) {
+                        description = book.description.replace(/<[^>]*>/g, '');
+                    }
+                    
+                    return {
+                        source: 'Google Books',
+                        title: book.title || '',
+                        authors: book.authors || [],
+                        description: description,
+                        url: book.infoLink || `https://www.google.com/books?isbn=${isbn}`
+                    };
+                }
+                
+                console.log('Google Booksに登録なし');
+                return null;
+            } catch (error) {
+                console.error('Google Books API エラー:', error);
+                return null;
             }
         }
 
@@ -1201,11 +1399,24 @@
         // 本のリストを表示
         function renderBooks(booksToRender = books) {
             const bookList = document.getElementById('bookList');
+            const searchQuery = document.getElementById('searchBox').value.trim();
             
             if (booksToRender.length === 0) {
-                bookList.innerHTML = `<div class="empty-state">${t('noBooks')}</div>`;
+                if (searchQuery) {
+                    bookList.innerHTML = `<div class="empty-state">🔍 「${searchQuery}」の検索結果: 0件</div>`;
+                } else {
+                    bookList.innerHTML = `<div class="empty-state">${t('noBooks')}</div>`;
+                }
                 document.getElementById('pagination').innerHTML = '';
                 return;
+            }
+
+            // 検索結果の件数表示
+            let resultInfo = '';
+            if (searchQuery) {
+                resultInfo = `<div style="padding: 10px; background: #e8f5e9; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                    🔍 「<strong>${searchQuery}</strong>」の検索結果: <strong>${booksToRender.length}</strong>${t('searchResults')}
+                </div>`;
             }
 
             // ページネーション計算
@@ -1226,7 +1437,7 @@
             const endIndex = startIndex + itemsPerPageValue;
             const paginatedBooks = itemsPerPage === 'all' ? booksToRender : booksToRender.slice(startIndex, endIndex);
 
-            bookList.innerHTML = paginatedBooks.map(book => {
+            bookList.innerHTML = resultInfo + paginatedBooks.map(book => {
                 const statusText = {
                     'reading': t('statusReading'),
                     'completed': t('statusCompleted'),
@@ -1234,8 +1445,12 @@
                 };
 
                 const genreText = {
-                    'novel': t('novelBooks'),
+                    'fiction': t('fictionBooks'),
+                    'business': t('businessBooks'),
                     'self-help': t('selfHelpBooks'),
+                    'tech': t('techBooks'),
+                    'practical': t('practicalBooks'),
+                    'educational': t('educationalBooks'),
                     'english': t('englishBooks'),
                     'other': t('otherBooks')
                 };
@@ -1263,8 +1478,12 @@
                                 <div class="form-group">
                                     <label>${t('genre')}</label>
                                     <select id="edit-genre-${book.id}">
-                                        <option value="novel" ${book.genre === 'novel' ? 'selected' : ''}>${t('genreNovel')}</option>
+                                        <option value="fiction" ${book.genre === 'fiction' ? 'selected' : ''}>${t('genreFiction')}</option>
+                                        <option value="business" ${book.genre === 'business' ? 'selected' : ''}>${t('genreBusiness')}</option>
                                         <option value="self-help" ${book.genre === 'self-help' ? 'selected' : ''}>${t('genreSelfHelp')}</option>
+                                        <option value="tech" ${book.genre === 'tech' ? 'selected' : ''}>${t('genreTech')}</option>
+                                        <option value="practical" ${book.genre === 'practical' ? 'selected' : ''}>${t('genrePractical')}</option>
+                                        <option value="educational" ${book.genre === 'educational' ? 'selected' : ''}>${t('genreEducational')}</option>
                                         <option value="english" ${book.genre === 'english' ? 'selected' : ''}>${t('genreEnglish')}</option>
                                         <option value="other" ${(!book.genre || book.genre === 'other') ? 'selected' : ''}>${t('genreOther')}</option>
                                     </select>
@@ -1377,6 +1596,12 @@
             filterAndSortBooks();
         }
 
+        // 検索クリア
+        function clearSearch() {
+            document.getElementById('searchBox').value = '';
+            filterAndSortBooks();
+        }
+
         // メモの展開
         function toggleNotes(id) {
             const notesEl = document.getElementById(`notes-${id}`);
@@ -1459,11 +1684,25 @@
         function filterAndSortBooks() {
             const filterGenre = document.getElementById('filterGenre').value;
             const sortBy = document.getElementById('sortBy').value;
+            const searchQuery = document.getElementById('searchBox').value.toLowerCase().trim();
+
+            // 検索でフィルター
+            let filteredBooks = books;
+            if (searchQuery) {
+                filteredBooks = books.filter(book => {
+                    const title = (book.title || '').toLowerCase();
+                    const author = (book.author || '').toLowerCase();
+                    const notes = (book.notes || '').toLowerCase();
+                    
+                    return title.includes(searchQuery) || 
+                           author.includes(searchQuery) || 
+                           notes.includes(searchQuery);
+                });
+            }
 
             // ジャンルでフィルター
-            let filteredBooks = books;
             if (filterGenre !== 'all') {
-                filteredBooks = books.filter(book => {
+                filteredBooks = filteredBooks.filter(book => {
                     if (filterGenre === 'other') {
                         return !book.genre || book.genre === 'other';
                     }
