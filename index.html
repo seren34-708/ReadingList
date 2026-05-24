@@ -606,6 +606,7 @@
                         <option value="practical">📚 実用書・趣味</option>
                         <option value="educational">🎓 学習・教養</option>
                         <option value="english">🌍 英語・洋書</option>
+                        <option value="audible">🎧 Audible</option>
                         <option value="other">📝 その他</option>
                     </select>
                 </div>
@@ -707,6 +708,7 @@
                     <option value="practical">📚 実用書・趣味</option>
                     <option value="educational">🎓 学習・教養</option>
                     <option value="english">🌍 英語・洋書</option>
+                    <option value="audible">🎧 Audible</option>
                     <option value="other">📝 その他</option>
                 </select>
                 <label>並び替え：</label>
@@ -758,6 +760,7 @@
                 practicalBooks: '📚 実用書・趣味',
                 educationalBooks: '🎓 学習・教養',
                 englishBooks: '🌍 英語・洋書',
+                audibleBooks: '🎧 Audible',
                 otherBooks: '📝 その他',
                 addNewBook: '新しい本を追加',
                 isbn: 'ISBN（自動入力）',
@@ -774,6 +777,7 @@
                 genrePractical: '📚 実用書・趣味',
                 genreEducational: '🎓 学習・教養',
                 genreEnglish: '🌍 英語・洋書',
+                genreAudible: '🎧 Audible',
                 genreOther: '📝 その他',
                 url: 'URL（参考リンク）',
                 urlPlaceholder: 'https://example.com',
@@ -844,6 +848,7 @@
                 practicalBooks: '📚 Practical & Hobbies',
                 educationalBooks: '🎓 Educational',
                 englishBooks: '🌍 English Books',
+                audibleBooks: '🎧 Audible',
                 otherBooks: '📝 Other',
                 addNewBook: 'Add New Book',
                 isbn: 'ISBN (Auto-fill)',
@@ -860,6 +865,7 @@
                 genrePractical: '📚 Practical & Hobbies',
                 genreEducational: '🎓 Educational',
                 genreEnglish: '🌍 English Books',
+                genreAudible: '🎧 Audible',
                 genreOther: '📝 Other',
                 url: 'URL (Reference Link)',
                 urlPlaceholder: 'https://example.com',
@@ -1013,7 +1019,8 @@
             genreSelect.options[4].text = t('genrePractical');
             genreSelect.options[5].text = t('genreEducational');
             genreSelect.options[6].text = t('genreEnglish');
-            genreSelect.options[7].text = t('genreOther');
+            genreSelect.options[7].text = t('genreAudible');
+            genreSelect.options[8].text = t('genreOther');
 
             // ステータス
             const statusSelect = document.getElementById('status');
@@ -1058,7 +1065,8 @@
             genreFilter.options[5].text = t('genrePractical');
             genreFilter.options[6].text = t('genreEducational');
             genreFilter.options[7].text = t('genreEnglish');
-            genreFilter.options[8].text = t('genreOther');
+            genreFilter.options[8].text = t('genreAudible');
+            genreFilter.options[9].text = t('genreOther');
 
             // ソート
             const sortSelect = document.getElementById('sortBy');
@@ -1472,25 +1480,31 @@
                     'practical': t('practicalBooks'),
                     'educational': t('educationalBooks'),
                     'english': t('englishBooks'),
+                    'audible': t('audibleBooks'),
                     'other': t('otherBooks')
                 };
 
                 const statusClass = `status-${book.status}`;
                 const genreClass = `genre-${book.genre || 'other'}`;
                 
-                // 評価の星（色付き）
+                // 評価の星（色付き - 背景色とテキストで表現）
                 const getRatingStars = (rating) => {
                     if (!rating) return '';
                     const count = parseInt(rating);
-                    const colors = {
-                        5: '#FFD700', // ゴールド
-                        4: '#FFA500', // オレンジ
-                        3: '#87CEEB', // スカイブルー
-                        2: '#C0C0C0', // シルバー
-                        1: '#D3D3D3'  // ライトグレー
+                    
+                    // 背景色で星を表現
+                    const styles = {
+                        5: 'background: linear-gradient(45deg, #FFD700, #FFA500); color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);', // ゴールド
+                        4: 'background: linear-gradient(45deg, #FFA500, #FF8C00); color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);', // オレンジ
+                        3: 'background: linear-gradient(45deg, #87CEEB, #5cacee); color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);', // スカイブルー
+                        2: 'background: linear-gradient(45deg, #C0C0C0, #A9A9A9); color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);', // シルバー
+                        1: 'background: linear-gradient(45deg, #D3D3D3, #BEBEBE); color: #666; text-shadow: 0 0 2px rgba(0,0,0,0.2);'  // ライトグレー
                     };
-                    const color = colors[count] || '#FFD700';
-                    return `<span style="color: ${color} !important;">${'⭐'.repeat(count)}</span>`;
+                    
+                    const style = styles[count] || styles[5];
+                    const stars = '★'.repeat(count);
+                    
+                    return `<span style="${style} padding: 2px 8px; border-radius: 4px; display: inline-block; font-size: 0.9em;">${stars}</span>`;
                 };
                 const ratingStars = getRatingStars(book.rating);
 
@@ -1520,6 +1534,7 @@
                                         <option value="practical" ${book.genre === 'practical' ? 'selected' : ''}>${t('genrePractical')}</option>
                                         <option value="educational" ${book.genre === 'educational' ? 'selected' : ''}>${t('genreEducational')}</option>
                                         <option value="english" ${book.genre === 'english' ? 'selected' : ''}>${t('genreEnglish')}</option>
+                                        <option value="audible" ${book.genre === 'audible' ? 'selected' : ''}>${t('genreAudible')}</option>
                                         <option value="other" ${(!book.genre || book.genre === 'other') ? 'selected' : ''}>${t('genreOther')}</option>
                                     </select>
                                 </div>
@@ -1575,7 +1590,7 @@
                                     <span class="genre-badge ${genreClass}">${genreText[book.genre] || genreText['other']}</span>
                                 </div>
                                 ${book.author ? `<div class="book-author">${t('authorLabel')} ${book.author}</div>` : ''}
-                                ${ratingStars ? `<div class="book-author rating" style="font-size: 1.1em;">${ratingStars}</div>` : ''}
+                                ${ratingStars ? `<div class="book-author" style="font-size: 1.1em;">${ratingStars}</div>` : ''}
                                 ${book.url ? `<div class="book-author">🔗 <a href="${book.url}" target="_blank" rel="noopener noreferrer" style="color: #667eea; text-decoration: none;">${t('linkLabel')}</a></div>` : ''}
                             </div>
                             <span class="status-badge ${statusClass}">${statusText[book.status]}</span>
