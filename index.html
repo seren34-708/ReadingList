@@ -598,7 +598,7 @@
                 </div>
                 <div class="form-group">
                     <label for="genre">ジャンル *</label>
-                    <select id="genre" required>
+                    <select id="genre" required onchange="toggleAudibleSubGenre('audibleSubGenre', this.value)">
                         <option value="fiction">📖 小説・文学</option>
                         <option value="business">📘 ビジネス・経済</option>
                         <option value="self-help">💡 自己啓発・心理・哲学</option>
@@ -608,6 +608,20 @@
                         <option value="english">🌍 英語・洋書</option>
                         <option value="audible">🎧 Audible</option>
                         <option value="other">📝 その他</option>
+                    </select>
+                </div>
+                <div class="form-group" id="audibleSubGenre" style="display:none;">
+                    <label for="audibleSub">🎧 Audibleのジャンル</label>
+                    <select id="audibleSub">
+                        <option value="">-- 選択してください --</option>
+                        <option value="audible-fiction">📖 小説・文学</option>
+                        <option value="audible-business">📘 ビジネス・経済</option>
+                        <option value="audible-self-help">💡 自己啓発・心理・哲学</option>
+                        <option value="audible-tech">💻 技術・IT</option>
+                        <option value="audible-practical">📚 実用書・趣味</option>
+                        <option value="audible-educational">🎓 学習・教養</option>
+                        <option value="audible-english">🌍 英語・洋書</option>
+                        <option value="audible-other">📝 その他</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1360,11 +1374,15 @@
         document.getElementById('bookForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            const genreValue = document.getElementById('genre').value;
+            const audibleSub = document.getElementById('audibleSub').value;
+            const finalGenre = (genreValue === 'audible' && audibleSub) ? audibleSub : genreValue;
+
             const book = {
                 id: Date.now(),
                 title: document.getElementById('title').value,
                 author: document.getElementById('author').value,
-                genre: document.getElementById('genre').value,
+                genre: finalGenre,
                 url: document.getElementById('url').value,
                 status: document.getElementById('status').value,
                 rating: document.getElementById('rating').value,
@@ -1379,6 +1397,7 @@
             filterAndSortBooks();
             updateStats();
             this.reset();
+            document.getElementById('audibleSubGenre').style.display = 'none';
         });
 
         // 本を削除
@@ -1410,7 +1429,9 @@
 
             book.title = document.getElementById(`edit-title-${id}`).value;
             book.author = document.getElementById(`edit-author-${id}`).value;
-            book.genre = document.getElementById(`edit-genre-${id}`).value;
+            const editGenre = document.getElementById(`edit-genre-${id}`).value;
+            const editAudibleSub = document.getElementById(`edit-audible-select-${id}`).value;
+            book.genre = (editGenre === 'audible' && editAudibleSub) ? editAudibleSub : editGenre;
             book.url = document.getElementById(`edit-url-${id}`).value;
             book.status = document.getElementById(`edit-status-${id}`).value;
             book.rating = document.getElementById(`edit-rating-${id}`).value;
@@ -1481,6 +1502,14 @@
                     'educational': t('educationalBooks'),
                     'english': t('englishBooks'),
                     'audible': t('audibleBooks'),
+                    'audible-fiction': `🎧 ${t('fictionBooks')}`,
+                    'audible-business': `🎧 ${t('businessBooks')}`,
+                    'audible-self-help': `🎧 ${t('selfHelpBooks')}`,
+                    'audible-tech': `🎧 ${t('techBooks')}`,
+                    'audible-practical': `🎧 ${t('practicalBooks')}`,
+                    'audible-educational': `🎧 ${t('educationalBooks')}`,
+                    'audible-english': `🎧 ${t('englishBooks')}`,
+                    'audible-other': `🎧 ${t('otherBooks')}`,
                     'other': t('otherBooks')
                 };
 
@@ -1526,16 +1555,30 @@
                                 </div>
                                 <div class="form-group">
                                     <label>${t('genre')}</label>
-                                    <select id="edit-genre-${book.id}">
-                                        <option value="fiction" ${book.genre === 'fiction' ? 'selected' : ''}>${t('genreFiction')}</option>
+                                    <select id="edit-genre-${book.id}" onchange="toggleAudibleSubGenre('edit-audible-sub-${book.id}', this.value)">
+                                        <option value="fiction" ${(!book.genre.startsWith('audible') && book.genre === 'fiction') ? 'selected' : ''}>${t('genreFiction')}</option>
                                         <option value="business" ${book.genre === 'business' ? 'selected' : ''}>${t('genreBusiness')}</option>
                                         <option value="self-help" ${book.genre === 'self-help' ? 'selected' : ''}>${t('genreSelfHelp')}</option>
                                         <option value="tech" ${book.genre === 'tech' ? 'selected' : ''}>${t('genreTech')}</option>
                                         <option value="practical" ${book.genre === 'practical' ? 'selected' : ''}>${t('genrePractical')}</option>
                                         <option value="educational" ${book.genre === 'educational' ? 'selected' : ''}>${t('genreEducational')}</option>
                                         <option value="english" ${book.genre === 'english' ? 'selected' : ''}>${t('genreEnglish')}</option>
-                                        <option value="audible" ${book.genre === 'audible' ? 'selected' : ''}>${t('genreAudible')}</option>
+                                        <option value="audible" ${(book.genre === 'audible' || book.genre.startsWith('audible-')) ? 'selected' : ''}>${t('genreAudible')}</option>
                                         <option value="other" ${(!book.genre || book.genre === 'other') ? 'selected' : ''}>${t('genreOther')}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="edit-audible-sub-${book.id}" style="display: ${book.genre.startsWith('audible') ? 'block' : 'none'};">
+                                    <label>🎧 Audibleのジャンル</label>
+                                    <select id="edit-audible-select-${book.id}">
+                                        <option value="" ${book.genre === 'audible' ? 'selected' : ''}>-- 選択してください --</option>
+                                        <option value="audible-fiction" ${book.genre === 'audible-fiction' ? 'selected' : ''}>${t('genreFiction')}</option>
+                                        <option value="audible-business" ${book.genre === 'audible-business' ? 'selected' : ''}>${t('genreBusiness')}</option>
+                                        <option value="audible-self-help" ${book.genre === 'audible-self-help' ? 'selected' : ''}>${t('genreSelfHelp')}</option>
+                                        <option value="audible-tech" ${book.genre === 'audible-tech' ? 'selected' : ''}>${t('genreTech')}</option>
+                                        <option value="audible-practical" ${book.genre === 'audible-practical' ? 'selected' : ''}>${t('genrePractical')}</option>
+                                        <option value="audible-educational" ${book.genre === 'audible-educational' ? 'selected' : ''}>${t('genreEducational')}</option>
+                                        <option value="audible-english" ${book.genre === 'audible-english' ? 'selected' : ''}>${t('genreEnglish')}</option>
+                                        <option value="audible-other" ${book.genre === 'audible-other' ? 'selected' : ''}>${t('genreOther')}</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -1652,6 +1695,16 @@
             filterAndSortBooks();
         }
 
+        // Audibleサブジャンル表示切替
+        function toggleAudibleSubGenre(containerId, value) {
+            const container = document.getElementById(containerId);
+            if (value === 'audible') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
         // メモの展開
         function toggleNotes(id) {
             const notesEl = document.getElementById(`notes-${id}`);
@@ -1763,6 +1816,9 @@
                 filteredBooks = filteredBooks.filter(book => {
                     if (filterGenre === 'other') {
                         return !book.genre || book.genre === 'other';
+                    }
+                    if (filterGenre === 'audible') {
+                        return book.genre === 'audible' || (book.genre && book.genre.startsWith('audible-'));
                     }
                     return book.genre === filterGenre;
                 });
